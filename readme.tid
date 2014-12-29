@@ -35,7 +35,7 @@ The macro shouldn't be used in normal WikiText since its behavior is unpredictab
 
 !How randVal is generated (pseudocode):
 
-num_steps = (upperBound-lowerBound)/stepSize
+num_steps = (upperBound-lowerBound)/stepSize+1
 
 n = floor(num_steps*random())
 

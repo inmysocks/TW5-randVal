@@ -43,7 +43,7 @@ RandValWidget.prototype.execute = function() {
 	var upper = this.getAttribute("$upper");
 	var step = this.getAttribute("$step",1);
 	
-	var numpts = ((upper)-(lower))/(step);
+	var numpts = ((upper)-(lower))/(step)+1;
 	var size = (upper)-(lower);
 	if ( numpts <= 1 ) {
 	  var output = lower;
