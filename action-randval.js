@@ -38,22 +38,26 @@ RandValWidget.prototype.execute = function() {
 	this.actionTiddler = this.getAttribute("$tiddler",this.getVariable("currentTiddler"));
 	this.actionField = this.getAttribute("$field");
 	this.actionIndex = this.getAttribute("$index");
-	
-	var lower = this.getAttribute("$lower");
-	var upper = this.getAttribute("$upper");
+
+	var numrolls = this.getAttribute("$numrolls",1);	
+	var lower = this.getAttribute("$lower",1);
+	var upper = this.getAttribute("$upper",6);
 	var step = this.getAttribute("$step",1);
 	
 	var numpts = ((upper)-(lower))/(step)+1;
 	var size = (upper)-(lower);
 	if ( numpts <= 1 ) {
-	  var output = lower;
+	  var output = Number(numrolls*lower);
 	} else {
-	  var output = String(Math.floor(Math.random()*numpts)*(step)+Number(lower));
-	  if ( Number(output) > Number(upper) ) {
-	    var output = (upper);
+		var output = 0;
+		for (var i = 0; i < Number(numrolls); i++) {
+		  output = Number(output) + (Math.floor(Math.random()*numpts)*(step)+Number(lower));
+		}
+	  if ( Number(output) > Number(numrolls)*Number(upper) ) {
+	    var output = Number(numrolls*upper);
 	  }
 	} 
-	this.actionValue = output;
+	this.actionValue = String(output);
 };
 
 /*
@@ -61,7 +65,7 @@ Refresh the widget by ensuring our attributes are up to date
 */
 RandValWidget.prototype.refresh = function(changedTiddlers) {
 	var changedAttributes = this.computeAttributes();
-	if(changedAttributes["$tiddler"] || changedAttributes["$field"] || changedAttributes["$index"] || changedAttributes["$lower"] || changedAttributes["$upper"] || changedAttributes["$step"]) {
+	if(changedAttributes["$tiddler"] || changedAttributes["$field"] || changedAttributes["$index"] || changedAttributes["$lower"] || changedAttributes["$upper"] || changedAttributes["$step"] || changedAttributes["$numrolls"]) {
 		this.refreshSelf();
 		return true;
 	}
