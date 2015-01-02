@@ -45,8 +45,11 @@ num_steps = (upperBound-lowerBound)/stepSize+1
 output = 0
 
 for i=1 to num_rolls
+
   n = floor(num_steps*random())
+  
   output = output + lowerBound+n*stepSize
+  
 end
 
 return output
