@@ -8,9 +8,10 @@ This plugin contains a widget that generates a random number and stores it in a 
 This plugin also contains a javascript macro that acts similarly to the widget.
 
 The macro will take the following inputs:<br>
-lower - the lower bound of the random numbers generated.
-upper - the upper bound on the random numbers generated
+lower - the lower bound of the random numbers generated, defaults to 1.
+upper - the upper bound on the random numbers generated, defaults to 6.
 step - the step size of the random numbers generated (that is all random numbers will be in the form rand = lowerBound+n*stepSize where n is an integer and lowerBound <= rand <= upperBound) stepSize defaults to 1 (so integer outputs). If stepSize > upperBound-lowerBound than the output will always be lowerBound
+numrolls - the number of times to roll a random number and sum the results, defaults to 1 if no value is given.
 
 The Widget takes these additional inputs:<br>
 tiddler- the tiddler that will contain the random value
@@ -20,26 +21,33 @@ field - the field of the specified tiddler that will hold the random value.
 
 ```
 <$button>
-<$action-randval $tiddler=tiddlerName $field=fieldName $lower=lowerBound $upper=upperBound $step=stepSize/>
+<$action-randval $tiddler=tiddlerName $field=fieldName $lower=lowerBound $upper=upperBound $step=stepSize $numrolls=numberOfRolls/>
 Generate Random Value
 </$button>
 ```
 
-The code will put a random number in the field `fieldName` of the tiddler `tiddlerName`. The number will be between `lowerBound` and `upperBound` inclusive.
+The code will put a random number in the field `fieldName` of the tiddler `tiddlerName`. The number will be the sum of numberOfRolls numbers between `lowerBound` and `upperBound` inclusive.
 
-!Macro example cone:
-''Note: The macro is left over from my testing and I just haven't removed it yet. You probably shouldn't use it, use the widget instead.''
+!Another example:
 
 ```
-<<randVal lowerBound upperBound stepSize>>
+<$button>Roll Dice!
+<$action-randval $field=fieldName/>
+</$button>
 ```
 
-The macro shouldn't be used in normal WikiText since its behavior is unpredictable due to how the wiki refreshes. It can be used to set values on button presses or similar things, or when unpredictable behavior is desired. I don't know when this would be desired.
+When the button is pressed, the code will generate a random integer between 1 and 6 inclusive and store it in the field fieldName. So it is equivalent to rolling a normal 6 sided dice.
 
 !How randVal is generated (pseudocode):
 
-num_steps = (upperBound-lowerBound)/stepSize
+num_steps = (upperBound-lowerBound)/stepSize+1
 
-n = floor(num_steps*random())
+output = 0
 
-output = lowerBound+n*stepSize
+for i=1 to num_rolls
+  n = floor(num_steps*random())
+  output = output + lowerBound+n*stepSize
+end
+
+return output
+  
