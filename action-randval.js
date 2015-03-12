@@ -5,6 +5,8 @@ module-type: widget
 
 Action widget to set a single field or index on a tiddler to a random number.
 
+<$action-randval $tiddler=someTiddler $field=store_field $lower=1 $upper=6 $step=1/>
+
 \*/
 (function(){
 
@@ -36,27 +38,48 @@ Compute the internal state of the widget
 */
 RandValWidget.prototype.execute = function() {
 	this.actionTiddler = this.getAttribute("$tiddler",this.getVariable("currentTiddler"));
-	this.actionField = this.getAttribute("$field");
+	this.actionField = this.getAttribute("$field","store_field");
 	this.actionIndex = this.getAttribute("$index");
+	this.padLength = this.getAttribute("$length","0");
+	this.prefixValue = this.getAttribute("$prefix")
 
 	var numrolls = this.getAttribute("$numrolls",1);	
 	var lower = this.getAttribute("$lower",1);
 	var upper = this.getAttribute("$upper",6);
 	var step = this.getAttribute("$step",1);
+	var randValue;
+	var output;
 	
-	var numpts = ((upper)-(lower))/(step)+1;
-	var size = (upper)-(lower);
-	if ( numpts <= 1 ) {
-	  var output = Number(numrolls*lower);
+	if(numrolls===0) {
+		randValue = 0;
 	} else {
-		var output = 0;
-		for (var i = 0; i < Number(numrolls); i++) {
-		  output = Number(output) + (Math.floor(Math.random()*numpts)*(step)+Number(lower));
+		var numpts = ((upper)-(lower))/(step)+1;
+		var size = (upper)-(lower);
+		if(numpts <= 1) {
+		  randValue = Number(numrolls*lower);
+		} else {
+			var randValue = 0;
+			for (var i = 0; i < Number(numrolls); i++) {
+			  randValue = Number(randValue) + (Math.floor(Math.random()*numpts)*(step)+Number(lower));
+			}
+		  if(Number(randValue) > Number(numrolls)*Number(upper)) {
+		    randValue = Number(numrolls*upper);
+		  }
+		} 
+	}
+
+	if(this.prefixValue) {
+		if(this.padLength) {
+			output = this.prefixValue+$tw.utils.pad(randValue,this.padLength);
+		} else {
+			output = this.prefixValue+randValue;
 		}
-	  if ( Number(output) > Number(numrolls)*Number(upper) ) {
-	    var output = Number(numrolls*upper);
-	  }
-	} 
+	} else if(this.padLength) {
+			output = $tw.utils.pad(randValue,this.padLength);
+	} else {
+			output = randValue;
+	}
+
 	this.actionValue = String(output);
 };
 
